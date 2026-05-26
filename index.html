@@ -1757,26 +1757,45 @@
         const time = getRandomTime();
 
         const notification = document.createElement("div");
+        notification.className = "notif-enter";
         notification.style.cssText = `
-          background: white;
-          border-radius: 12px;
-          padding: 14px 16px;
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+          background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+          border: 1px solid rgba(20, 184, 166, 0.2);
+          border-radius: 14px;
+          padding: 16px 16px;
+          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(20, 184, 166, 0.1);
           display: flex;
-          gap: 12px;
-          align-items: center;
-          animation: slideInLeft 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+          gap: 14px;
+          align-items: flex-start;
           width: 100%;
-          max-width: 300px;
+          max-width: 320px;
           font-family: 'Plus Jakarta Sans', sans-serif;
           box-sizing: border-box;
           pointer-events: auto;
+          backdrop-filter: blur(4px);
+          position: relative;
+          overflow: hidden;
         `;
 
+        // Add subtle background shine effect
+        const shine = document.createElement("div");
+        shine.style.cssText = `
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+          animation: shine 3s ease-in-out infinite;
+          pointer-events: none;
+        `;
+        notification.appendChild(shine);
+
+        // Avatar with enhanced styling
         const avatar = document.createElement("div");
         avatar.style.cssText = `
-          width: 40px;
-          height: 40px;
+          width: 44px;
+          height: 44px;
           border-radius: 50%;
           background: linear-gradient(135deg, #14b8a6 0%, #2dd4bf 100%);
           flex-shrink: 0;
@@ -1785,7 +1804,10 @@
           justify-content: center;
           color: white;
           font-weight: 700;
-          font-size: 16px;
+          font-size: 18px;
+          box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
+          position: relative;
+          border: 2px solid rgba(255, 255, 255, 0.8);
         `;
         avatar.textContent = buyer.name.charAt(0).toUpperCase();
 
@@ -1793,34 +1815,62 @@
         content.style.cssText = `
           flex: 1;
           min-width: 0;
+          padding-top: 2px;
         `;
+
+        // Trust badge row
+        const trustRow = document.createElement("div");
+        trustRow.style.cssText = `
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          margin-bottom: 4px;
+        `;
+
+        const verifiedBadge = document.createElement("span");
+        verifiedBadge.style.cssText = `
+          font-size: 14px;
+          line-height: 1;
+        `;
+        verifiedBadge.textContent = "✓";
 
         const buyerName = document.createElement("div");
         buyerName.style.cssText = `
-          font-weight: 600;
-          color: #1e293b;
+          font-weight: 700;
+          color: #0f766e;
           font-size: 13px;
-          margin-bottom: 3px;
+          display: inline;
         `;
         buyerName.textContent = buyer.name;
+
+        trustRow.appendChild(verifiedBadge);
+        trustRow.appendChild(buyerName);
 
         const buyerJob = document.createElement("div");
         buyerJob.style.cssText = `
           font-size: 12px;
-          color: #94a3b8;
-          margin-bottom: 4px;
+          color: #64748b;
+          margin-bottom: 5px;
+          font-weight: 500;
         `;
         buyerJob.textContent = buyer.job;
 
         const timestamp = document.createElement("div");
         timestamp.style.cssText = `
           font-size: 12px;
-          color: #22c55e;
-          font-weight: 500;
+          background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%);
+          color: #16a34a;
+          font-weight: 600;
+          padding: 4px 8px;
+          border-radius: 6px;
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          border: 1px solid rgba(34, 197, 94, 0.2);
         `;
-        timestamp.textContent = "✓ Pembelian berhasil";
+        timestamp.innerHTML = `<span>✓</span> <span>Pembelian berhasil</span>`;
 
-        content.appendChild(buyerName);
+        content.appendChild(trustRow);
         content.appendChild(buyerJob);
         content.appendChild(timestamp);
 
@@ -1829,7 +1879,8 @@
         container.appendChild(notification);
 
         setTimeout(() => {
-          notification.style.animation = "slideOutLeft 0.5s cubic-bezier(0.4, 0, 0.2, 1)";
+          notification.classList.remove("notif-enter");
+          notification.classList.add("notif-exit");
           setTimeout(() => {
             notification.remove();
           }, 500);
@@ -1839,25 +1890,40 @@
       // Add animations
       const style = document.createElement("style");
       style.textContent = `
-        @keyframes slideInLeft {
+        @keyframes slideInTop {
           from {
+            transform: translateY(-20px);
             opacity: 0;
-            transform: translateX(-24px);
           }
           to {
+            transform: translateY(0);
             opacity: 1;
-            transform: translateX(0);
           }
         }
-        @keyframes slideOutLeft {
+        @keyframes fadeOut {
           from {
             opacity: 1;
-            transform: translateX(0);
           }
           to {
             opacity: 0;
-            transform: translateX(-24px);
           }
+        }
+        @keyframes shine {
+          0% {
+            left: -100%;
+          }
+          50% {
+            left: 100%;
+          }
+          100% {
+            left: 100%;
+          }
+        }
+        .notif-enter {
+          animation: slideInTop 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+        .notif-exit {
+          animation: fadeOut 0.5s ease forwards;
         }
       `;
       document.head.appendChild(style);
@@ -1937,10 +2003,6 @@
           <div class="hero-feature">
             <span class="hero-feature-icon">🗂️</span>
             <span>Portfolio Project</span>
-          </div>
-          <div class="hero-feature">
-            <span class="hero-feature-icon">💬</span>
-            <span>Discussion with mentor</span>
           </div>
           <div class="hero-feature">
             <span class="hero-feature-icon">🎓</span>
@@ -2190,11 +2252,6 @@
           <div class="benefit-title">Materi Selalu Update</div>
           <div class="benefit-desc">Menyesuaikan kebutuhan industri saat ini.</div>
         </div>
-        <div class="card benefit-card reveal reveal-delay-3">
-          <div class="benefit-icon">💬</div>
-          <div class="benefit-title">Premium Discord Community</div>
-          <div class="benefit-desc">Tempat bertanya, diskusi, dan networking.</div>
-        </div>
         <div class="card benefit-card reveal reveal-delay-1">
           <div class="benefit-icon">♾️</div>
           <div class="benefit-title">Akses Lifetime</div>
@@ -2358,37 +2415,37 @@
           <div class="compare-title">Belajar Sendiri</div>
           <div class="compare-list">
             <div class="compare-item">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--danger);">
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--danger);">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
               <span>Bingung mulai dari mana</span>
             </div>
             <div class="compare-item">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--danger);">
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--danger);">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
               <span>Tidak ada roadmap</span>
             </div>
             <div class="compare-item">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--danger);">
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--danger);">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
               <span>Tidak ada mentor</span>
             </div>
             <div class="compare-item">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--danger);">
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--danger);">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
               <span>Tidak ada feedback</span>
             </div>
             <div class="compare-item">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--danger);">
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--danger);">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
               <span>Tidak ada community</span>
             </div>
             <div class="compare-item">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--danger);">
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--danger);">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
               <span>Tidak ada panduan karir</span>
@@ -2400,37 +2457,37 @@
           <div class="compare-title">Belajar di BDA Academy x Pijar Academy</div>
           <div class="compare-list">
             <div class="compare-item">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--success);">
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--success);">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
               </svg>
               <span>Roadmap terstruktur</span>
             </div>
             <div class="compare-item">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--success);">
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--success);">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
               </svg>
               <span>Mentor &amp; Community</span>
             </div>
             <div class="compare-item">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--success);">
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--success);">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
               </svg>
               <span>Career Preparation</span>
             </div>
             <div class="compare-item">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--success);">
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--success);">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
               </svg>
               <span>Portfolio Guidance</span>
             </div>
             <div class="compare-item">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--success);">
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--success);">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
               </svg>
               <span>Akses Lifetime</span>
             </div>
             <div class="compare-item">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--success);">
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--success);">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
               </svg>
               <span>Belajar lebih cepat dan terarah</span>
@@ -2486,6 +2543,50 @@
         <div class="bonus-total-sub">Gratis untuk peserta yang bergabung hari ini.</div>
       </div>
     </div>
+  </section>
+
+  <!-- ============================
+       COUNTDOWN
+  ============================== -->
+  <section class="section" style="background:var(--bg-light-2);padding:60px 0;">
+    <div class="container">
+      <div style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.08) 100%); border: 2px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius); padding: 40px 28px; text-align: center;">
+        <!-- Header -->
+        <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;">
+          <svg style="width: 24px; height: 24px; color: var(--danger); animation: spin 3s linear infinite;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span style="font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; color: var(--danger); letter-spacing: 0.5px;">PROMO AKAN BERAKHIR DALAM</span>
+        </div>
+
+        <!-- Countdown -->
+        <div style="display: flex; justify-content: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap;">
+          <div style="background: white; border-radius: var(--radius-sm); padding: 20px 24px; min-width: 80px; box-shadow: var(--shadow-sm);">
+            <div style="font-size: 2rem; font-weight: 800; color: var(--danger); font-family: var(--font-display);" id="countdown-hours">23</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; font-weight: 600;">Jam</div>
+          </div>
+          <div style="background: white; border-radius: var(--radius-sm); padding: 20px 24px; min-width: 80px; box-shadow: var(--shadow-sm);">
+            <div style="font-size: 2rem; font-weight: 800; color: var(--danger); font-family: var(--font-display);" id="countdown-minutes">59</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; font-weight: 600;">Menit</div>
+          </div>
+          <div style="background: white; border-radius: var(--radius-sm); padding: 20px 24px; min-width: 80px; box-shadow: var(--shadow-sm);">
+            <div style="font-size: 2rem; font-weight: 800; color: var(--danger); font-family: var(--font-display);" id="countdown-seconds">59</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; font-weight: 600;">Detik</div>
+          </div>
+        </div>
+
+        <!-- Subtitle -->
+        <p style="font-size: 0.95rem; color: var(--danger); font-weight: 600;">✨ Bonus terbatas untuk 20 pendaftar hari ini</p>
+      </div>
+    </div>
+
+    <style>
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
   </section>
 
   <!-- ============================
@@ -2583,81 +2684,105 @@
     <div class="container">
       <div class="text-center reveal">
         <span class="section-label">❓ FAQ</span>
-        <h2 class="section-title">Pertanyaan yang Sering Diajukan</h2>
+        <h2 class="section-title">Sering Ditanyakan (FAQ)</h2>
       </div>
       <div class="faq-list reveal">
         <!-- FAQ 1 -->
         <div class="faq-item">
           <button class="faq-toggle" aria-expanded="false">
-            <span>Apakah bisa diikuti oleh pemula tanpa background IT?</span>
+            <span>Gue beneran awam banget, apa bisa ikut?</span>
             <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
           <div class="faq-content">
             <div class="faq-content-inner">
-              Bisa banget. Bootcamp ini dirancang untuk pemula yang belum punya background teknis. Materi disampaikan
-              dari dasar dengan bahasa yang mudah dipahami.
+              Bisa banget! Materi kita disusun dari level "nol" sampai mahir. Banyak alumni kita yang tadinya dari
+              background non-IT (buruh pabrik, admin, sales) sekarang sudah sukses careerswitch.
             </div>
           </div>
         </div>
+
         <!-- FAQ 2 -->
         <div class="faq-item">
           <button class="faq-toggle" aria-expanded="false">
-            <span>Berapa lama waktu yang dibutuhkan untuk menyelesaikan program?</span>
+            <span>Materinya bisa diakses kapan aja?</span>
             <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
           <div class="faq-content">
             <div class="faq-content-inner">
-              Program ini berlangsung selama 30 hari dengan intensitas 2-3 jam per hari. Fleksibel untuk kamu yang masih
-              bekerja atau kuliah. Dengan akses lifetime, kamu bisa belajar sesuai pace-mu sendiri.
+              Yes! Akses <strong>LIFETIME</strong> alias sekali bayar buat selamanya. Kamu bisa tonton kapanpun kamu senggang, jadi
+              fleksibel banget buat kamu yang sambil kerja shift atau sibuk kuliah.
             </div>
           </div>
         </div>
+
         <!-- FAQ 3 -->
         <div class="faq-item">
           <button class="faq-toggle" aria-expanded="false">
-            <span>Apakah ada sertifikat setelah lulus?</span>
+            <span>Dapet Sertifikat gak kalau lulus?</span>
             <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
           <div class="faq-content">
             <div class="faq-content-inner">
-              Ya, setiap peserta yang menyelesaikan program akan mendapat sertifikat digital yang bisa ditambahkan ke
-              LinkedIn.
-            </div>
-          </div>
-        </div>
-        <!-- FAQ 4 -->
-        <div class="faq-item">
-          <button class="faq-toggle" aria-expanded="false">
-            <span>Bagaimana cara pembayaran dan apakah bisa mencicil?</span>
-            <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-          <div class="faq-content">
-            <div class="faq-content-inner">
-              Pembayaran bisa dilakukan via transfer bank, e-wallet, atau kartu kredit. Tersedia opsi cicilan 0% untuk
-              kartu kredit tertentu.
+              Dapet dong! Kamu akan dapet <strong>Certificate of Completion</strong> setelah menyelesaikan semua materi sebagai bukti
+              valid kalau kamu sudah menguasai skill Data Analyst.
             </div>
           </div>
         </div>
         <!-- FAQ 5 -->
         <div class="faq-item">
           <button class="faq-toggle" aria-expanded="false">
-            <span>Apakah ada bantuan untuk pencarian kerja setelah lulus?</span>
+            <span>Belajarnya via apa?</span>
             <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
           <div class="faq-content">
             <div class="faq-content-inner">
-              Ya, kami memiliki career support berupa job referral, review CV, dan mock interview. Bonus career
-              preparation juga termasuk di dalam program.
+              Materi dalam bentuk <strong>71 Video Full Daging</strong> yang bisa di-streaming lewat dashboard. Penjelasan
+              to-the-point, praktis, dan langsung praktek kasus nyata industri.
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQ 6 -->
+        <div class="faq-item">
+          <button class="faq-toggle" aria-expanded="false">
+            <span>Seberapa mendalam materi yang akan dipelajari?</span>
+            <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="faq-content">
+            <div class="faq-content-inner">
+              Materi dirancang secara end-to-end (Fullstack). Kami tidak hanya mengajarkan cara menggunakan tools, tapi
+              juga logic di baliknya. Kamu akan belajar mulai dari pengumpulan data (SQL & Data Ingestion), pembersihan
+              data yang kompleks (Data Wrangling), analisis statistik menggunakan Python, hingga teknik bercerita dengan
+              data (Data Storytelling) melalui dashboard interaktif. Materi ini disusun agar kamu siap menghadapi kasus
+              nyata di industri, bukan sekadar teori.
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQ 7 -->
+        <div class="faq-item">
+          <button class="faq-toggle" aria-expanded="false">
+            <span>Berapa durasi rata-rata per video materinya?</span>
+            <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="faq-content">
+            <div class="faq-content-inner">
+              Kami menggunakan metode micro-learning untuk menjaga fokusmu. Setiap video berdurasi rata-rata 8 hingga 15
+              menit. Durasi ini sangat efektif agar kamu bisa belajar di sela kesibukan tanpa merasa kewalahan (burnout).
+              Untuk materi yang bersifat tutorial teknis atau coding live, durasi mungkin sedikit lebih panjang agar
+              penjelasan tidak terpotong.
             </div>
           </div>
         </div>
@@ -2724,6 +2849,41 @@
        JAVASCRIPT
   ============================== -->
   <script>
+    // === Countdown Timer ===
+    function initCountdown() {
+      // Set promo end time to 24 hours from now
+      const endTime = new Date().getTime() + 50 * 60 * 1000;
+      
+      function updateCountdown() {
+        const now = new Date().getTime();
+        const timeLeft = endTime - now;
+        
+        if (timeLeft < 0) {
+          document.getElementById('countdown-hours').textContent = '00';
+          document.getElementById('countdown-minutes').textContent = '00';
+          document.getElementById('countdown-seconds').textContent = '00';
+          return;
+        }
+        
+        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+        
+        document.getElementById('countdown-hours').textContent = String(hours).padStart(2, '0');
+        document.getElementById('countdown-minutes').textContent = String(minutes).padStart(2, '0');
+        document.getElementById('countdown-seconds').textContent = String(seconds).padStart(2, '0');
+      }
+      
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    }
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initCountdown);
+    } else {
+      initCountdown();
+    }
+
     // === Scroll Reveal ===
     const revealObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
